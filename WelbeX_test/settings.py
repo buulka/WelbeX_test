@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,9 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'application.apps.ApplicationConfig',
+    'rest_framework',
+    'webpack_loader',
+    # 'graphene_django',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,6 +55,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = ['http://localhost:8080']
+CORS_ORIGIN_ALLOW_ALL = False
 
 ROOT_URLCONF = 'WelbeX_test.urls'
 
@@ -69,6 +78,19 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "assets"),
+    os.path.join(BASE_DIR, "frontend/dist"),
+]
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'dist/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'frontend', 'webpack-stats.json')
+    }
+}
+
+
 WSGI_APPLICATION = 'WelbeX_test.wsgi.application'
 
 
@@ -77,7 +99,7 @@ WSGI_APPLICATION = 'WelbeX_test.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'welbex',
         'USER': 'postgres',
         'PASSWORD': '5923014kate',
@@ -129,3 +151,8 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#
+# GRAPHENE = {
+#     "SCHEMA": "application.schema.schema",
+# }
