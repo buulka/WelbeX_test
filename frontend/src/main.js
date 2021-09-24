@@ -1,12 +1,14 @@
 import Vue from 'vue'
-import Vuelidate from "vuelidate"
 import App from './App.vue'
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import router from './router'
-import './assets/style.css'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
-
-Vue.use(Vuelidate)
+Vue.use(BootstrapVue)
+Vue.use(BootstrapVueIcons)
 
 new Vue({
   router,

@@ -6,7 +6,6 @@ from .serializers import ItemSerializer
 
 data = []
 
-
 class ItemList(APIView):
 
     def get_object(self):
@@ -21,7 +20,9 @@ class ItemList(APIView):
         return Response(serializer.data)
 
 
-class Answer(APIView):
+class FilteredItems(APIView):
+
+
     def equals(self, column, value):
         items = []
         try:
@@ -98,5 +99,32 @@ class Answer(APIView):
     def get(self, request):
         global data
         serializer = ItemSerializer(data, many=True)
+
         return Response(serializer.data)
 
+
+class SortedItems(APIView):
+    def sort(self, column):
+        items = []
+        try:
+            if column == 'name':
+                items = Item.objects.raw('SELECT * FROM welbex ORDER BY name')
+            elif column == 'count':
+                items = Item.objects.raw('SELECT * FROM welbex ORDER BY count')
+            elif column == 'distance':
+                items = Item.objects.raw('SELECT * FROM welbex ORDER BY distance')
+            return items
+        except Item.DoesNotExist:
+            raise Http404
+
+    def post(self, request):
+        global data
+
+        column = request.data['selected_column']
+        data = self.sort(column)
+        return Response()
+
+    def get(self, request):
+        global data
+        serializer = ItemSerializer(data, many=True)
+        return Response(serializer.data)

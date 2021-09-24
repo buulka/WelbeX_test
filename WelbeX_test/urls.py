@@ -8,5 +8,6 @@ from application import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', views.ItemList.as_view()),
-    path('data/', views.Answer.as_view()),
+    path('filter/', views.FilteredItems.as_view()),
+    path('sort/', views.SortedItems.as_view())
 ]

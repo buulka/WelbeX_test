@@ -1,127 +1,268 @@
-<template xmlns="http://www.w3.org/1999/html">
-  <div id="itemtable" class="itemtable" >
-    <h1>Items</h1>
+<template>
+<div class="container-fluid">
+	<div class="row">
+				<div class="col-md-4">
+          <b-form @submit.prevent="sendSortData" inline>
+          <label class="mr-sm-2" >Сортировать по</label>
 
-    <form @submit.prevent="sendData" novalidate >
+          <b-form-select v-model="sortform.selected_column" required
+            id="inline-form-custom-select-pref"
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :options="[
+                {value: null, text: 'Выберите колонку'},
+                {value: 'name', text: 'имени'},
+                {value: 'count', text: 'количеству'},
+                {value: 'distance', text: 'расстоянию'},
+            ]"
+            :value="sortform.selected_column"
+          ></b-form-select>
 
-      <select v-model="dataform.selected_column" id="select1">
-        <option selected disabled>Выбор колонки</option>
-        <option value="date">Дата</option>
-        <option value="name">Имя</option>
-        <option value="count">Количество</option>
-        <option value="distance">Расстояние</option>
-      </select>
+            <div v-if="sortform.selected_column != null">
+              <b-button  @click="sendSortData" type="submit">Отсортировать</b-button>
+            </div>
 
-      <div v-if="dataform.selected_column === 'count' || dataform.selected_column === 'distance' || dataform.selected_column === 'date'">
+            <div v-else>
+              <b-button  disabled type="submit">Отсортировать</b-button>
+            </div>
+        </b-form>
+			</div>
 
-        <select v-model="dataform.selected_clause" id="select2.1">
-        <option selected disabled >Выбор условия</option>
-        <option value="equals">равно</option>
-        <option value="more">больше</option>
-        <option value="less">меньше</option>
-        </select>
-      </div>
+	</div>
 
-      <div v-else>
-        <select v-model="dataform.selected_clause" id="select2">
-        <option selected disabled >Выбор условия</option>
-        <option value="equals">равно</option>
-        <option value="contains">содержит</option>
-        <option value="more">больше</option>
-        <option value="less">меньше</option>
-      </select>
-      </div>
+  <div class="row">
+     <div class="col-md-12">
+       <b-form @submit.prevent="sendFilterData" inline>
+         <label class="mr-sm-2" >Фильтр: </label>
+       <b-form-select v-model="filterform.selected_column" required
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :options="[
+                {value: null, text: 'Выберите колонку'},
+                {value: 'date', text: 'дата'},
+                {value: 'name', text: 'имя'},
+                {value: 'count', text: 'количество'},
+                {value: 'distance', text: 'расстояние'},
+            ]"
+            :value="filterform.selected_column"
+          ></b-form-select>
 
+        <div v-if="filterform.selected_column === 'name'">
+          <b-form-select v-model="filterform.selected_clause" required
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :options="[
+                {value: null, text: 'Выберите условие'},
+                {value: 'equals', text: 'равно'},
+                {value: 'contains', text: 'содержит'},
+                {value: 'more', text: 'больше'},
+                {value: 'less', text: 'меньше'},
+            ]"
+            :value="filterform.selected_clause"
+          ></b-form-select>
+        </div>
 
+         <div v-else>
+                  <b-form-select v-model="filterform.selected_clause" required
+            class="mb-2 mr-sm-2 mb-sm-0"
+            :options="[
+                {value: null, text: 'Выберите условие'},
+                {value: 'equals', text: 'равно'},
+                {value: 'more', text: 'больше'},
+                {value: 'less', text: 'меньше'},
+            ]"
+            :value="filterform.selected_clause"
+          ></b-form-select>
+         </div>
 
-      <input v-model="dataform.sort_value" size="25" placeholder="значение для сортировки" id="input">
+         <div  v-if="filterform.selected_column === 'count' || filterform.selected_column === 'distance'">
+           <b-form-input required type="number" v-model="filterform.filter_value" placeholder="введите значение"></b-form-input>
+         </div>
 
-      <button @click="sendData" type="submit">Отфильтровать</button>
+         <div v-else-if="filterform.selected_column === 'name'">
+           <b-form-input required type="text" v-model="filterform.filter_value" placeholder="введите значение"></b-form-input>
+         </div>
 
-    </form>
+         <div v-else-if="filterform.selected_column === 'date'">
+           <b-form-input required type="date" v-model="filterform.filter_value" placeholder="введите значение"></b-form-input>
+         </div>
+          <div v-if="filterform.selected_column != null && filterform.selected_clause != null && filterform.filter_value != null">
+              <b-button  @click="sendFilterData" type="submit">Отфильтровать</b-button>
+            </div>
 
+            <div v-else>
+              <b-button  disabled type="submit">Отфильтровать</b-button>
+            </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Имя</th>
-          <th>Дата</th>
-          <th>Количество</th>
-          <th>Расстояние</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in items" :key="index">
-          <td>{{ item.name }}</td>
+      </b-form>
+
+     </div>
+  </div>
+
+			<div class="row">
+				<div class="col-md-8">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Дата</th>
+								<th>Имя</th>
+								<th>Количество</th>
+								<th>Расстояние</th>
+							</tr>
+						</thead>
+						<tbody>
+            <tr v-for="item in displayedItems" >
           <td>{{ item.date }}</td>
+          <td>{{ item.name }}</td>
           <td>{{ item.count }}</td>
           <td>{{ item.distance }}</td>
         </tr>
-      </tbody>
-    </table>
 
+
+						</tbody>
+					</table>
+				</div>
+
+
+	</div>
+  <div class="row">
+    <b-button-group class="mx-1">
+          <b-button type="button"  v-if="page != 1" @click="page--"> Назад </b-button>
+    </b-button-group>
+
+    <b-button-group class="mx-1">
+          <b-button type="button"  v-for="pageNumber in pages.slice(page-1, page+5)" @click="page = pageNumber"> {{pageNumber}} </b-button>
+    </b-button-group>
+
+    <b-button-group  class="mx-1">
+          <b-button type="button" @click="page++" v-if="page < pages.length" > Вперед </b-button>
+    </b-button-group>
   </div>
+</div>
+
+
 </template>
 
 <script>
 import axios from 'axios'
-import { required } from 'vuelidate/lib/validators';
+
 
 export default {
   data() {
     return {
       items: [],
-      dataform: {
-        sort_value: null,
+      filterform: {
+        filter_value: null,
         selected_clause: null,
         selected_column: null,
         sendInfo: null,
         errors: [],
         submitStatus: null
-      }
-
+      },
+      sortform: {
+        selected_column: null
+      },
+      page: 1,
+      perPage: 5,
+      pages: [],
+      status: null
     };
+  },
+computed: {
+    displayedItems() {
+      return this.paginate(this.items);
+    }
+  },
+  watch: {
+    items() {
+      this.setPages();
+    }
   },
 
   methods: {
-    getItems() {
-      const path = 'http://localhost:8000/items/';
-      axios
-          .get(path)
-          .then(res => (this.items = res.data))
-          .catch((error) => {
-            console.error(error);
-          });
 
+    setPages() {
+      this.page = 1;
+      this.pages = [];
+      let numberOfPages = Math.ceil(this.items.length / this.perPage);
+      for (let index = 1; index <= numberOfPages; index++) {
+        this.pages.push(index);
+      }
     },
-    updateItems() {
-      const path = 'http://localhost:8000/data/';
-      axios
-          .get(path)
-          .then(res => (this.items = res.data))
-          .catch((error) => {
-            console.error(error);
-          });
-      this.reloadComponentForce()
-    },
-    reloadComponentForce() {
-      this.$forceUpdate();
+    paginate(items) {
+      let page = this.page;
+      let perPage = this.perPage;
+      let from = (page * perPage) - perPage;
+      let to = (page * perPage);
+      return items.slice(from, to);
     },
 
 
-    sendData(){
-      const path = 'http://localhost:8000/data/';
-      const article = { sort_value: this.dataform.sort_value, selected_clause: this.dataform.selected_clause, selected_column: this.dataform.selected_column };
-      axios.post(path, article);
-      this.updateItems();
-
-    },
+  getItems() {
+    const path = 'http://localhost:8000/items/';
+    axios
+        .get(path)
+        .then(res => (this.items = res.data))
+        .catch((error) => {
+          console.error(error);
+        });
 
   },
+  updateFilteredItems() {
+    const path = 'http://localhost:8000/filter/';
+    axios
+        .get(path)
+        .then(res => (this.items = res.data))
+        .catch((error) => {
+          console.error(error);
+        });
+    this.reloadComponentForce()
+  },
+
+  updateSortedItems() {
+
+    const path = 'http://localhost:8000/sort/';
+    axios
+        .get(path)
+        .then(res => (this.items = res.data))
+        .catch((error) => {
+          console.error(error);
+        });
+    this.reloadComponentForce()
+  },
+
+  reloadComponentForce() {
+    this.$forceUpdate();
+
+  },
+
+  sendFilterData() {
+    const path = 'http://localhost:8000/filter/';
+    const article = {
+      sort_value: this.filterform.filter_value,
+      selected_clause: this.filterform.selected_clause,
+      selected_column: this.filterform.selected_column
+    };
+
+
+    axios.post(path, article);
+    this.updateFilteredItems();
+    this.status = 'filter';
+
+  },
+
+  sendSortData() {
+    const path = 'http://localhost:8000/sort/';
+    const article = {selected_column: this.sortform.selected_column};
+    axios.post(path, article);
+    this.updateSortedItems();
+  },
+
+
+
+},
+
   created() {
     this.getItems();
 
-  },
+  }
 };
 
 </script>
