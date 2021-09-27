@@ -1,1 +1,1 @@
-web: run this thing 
+web: gunicorn application.wsgi --log-file -
