@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = ['http://localhost:8080']
+CORS_ORIGIN_WHITELIST = ['http://localhost:8080', 'https://welbex-frontend.herokuapp.com']
 CORS_ORIGIN_ALLOW_ALL = False
 
 ROOT_URLCONF = 'WelbeX_test.urls'
