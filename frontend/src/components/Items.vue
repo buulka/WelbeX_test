@@ -31,7 +31,7 @@
 
   <div class="row">
      <div class="col-md-12">
-       <b-form @submit.prevent="sendFilterData" inline>
+       <b-form @submit.prevent="updateFilteredItems" inline>
          <label class="mr-sm-2" >Фильтр: </label>
        <b-form-select v-model="filterform.selected_column" required
             class="mb-2 mr-sm-2 mb-sm-0"
@@ -84,7 +84,7 @@
            <b-form-input required type="date" v-model="filterform.filter_value" placeholder="введите значение"></b-form-input>
          </div>
           <div v-if="filterform.selected_column != null && filterform.selected_clause != null && filterform.filter_value != null">
-              <b-button  @click="sendFilterData" type="submit">Отфильтровать</b-button>
+              <b-button  @click="updateFilteredItems" type="submit">Отфильтровать</b-button>
             </div>
 
             <div v-else>
@@ -206,8 +206,14 @@ computed: {
   },
   updateFilteredItems() {
     const path = 'http://localhost:8000/filter/';
+    const article = {
+      sort_value: this.filterform.filter_value,
+      selected_clause: this.filterform.selected_clause,
+      selected_column: this.filterform.selected_column
+    };
+
     axios
-        .get(path)
+        .post(path, article)
         .then(res => (this.items = res.data))
         .catch((error) => {
           console.error(error);
@@ -230,20 +236,6 @@ computed: {
 
   reloadComponentForce() {
     this.$forceUpdate();
-
-  },
-
-  sendFilterData() {
-    const path = 'http://localhost:8000/filter/';
-    const article = {
-      sort_value: this.filterform.filter_value,
-      selected_clause: this.filterform.selected_clause,
-      selected_column: this.filterform.selected_column
-    };
-
-
-    axios.post(path, article);
-    this.updateFilteredItems();
 
   },
 

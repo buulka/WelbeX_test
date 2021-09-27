@@ -4,7 +4,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import ItemSerializer
 
-# data = []
 
 class ItemList(APIView):
 
@@ -21,7 +20,6 @@ class ItemList(APIView):
 
 
 class FilteredItems(APIView):
-
 
     def equals(self, column, value):
         items = []
@@ -43,13 +41,13 @@ class FilteredItems(APIView):
         items = []
         try:
             if column == 'date':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE date > %s', [value])
+                items = Item.objects.filter(date__gt=value)
             elif column == 'name':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE name > %s', [value])
+                items = Item.objects.filter(name__gt=value)
             elif column == 'count':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE count > %s', [int(value)])
+                items = Item.objects.filter(count__gt=value)
             elif column == 'distance':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE distance > %s', [int(value)])
+                items = Item.objects.filter(distance__gt=value)
 
             return items
         except Item.DoesNotExist:
@@ -59,13 +57,13 @@ class FilteredItems(APIView):
         items = []
         try:
             if column == 'date':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE date < %s', [value])
+                items = Item.objects.filter(date__lt=value)
             elif column == 'name':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE name < %s', [value])
+                items = Item.objects.filter(name__lt=value)
             elif column == 'count':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE count < %s', [int(value)])
+                items = Item.objects.filter(count__lt=value)
             elif column == 'distance':
-                items = Item.objects.raw('SELECT * FROM welbex WHERE distance < %s', [int(value)])
+                items = Item.objects.filter(distance__lt=value)
 
             return items
         except Item.DoesNotExist:
@@ -73,13 +71,14 @@ class FilteredItems(APIView):
 
     def contains(self, column, value):
         try:
-            items = Item.objects.raw('SELECT * FROM welbex WHERE name ~ %s', [value])
+            items = Item.objects.filter(name__icontains=value)
+            print(items)
             return items
         except Item.DoesNotExist:
             raise Http404
 
     def post(self, request):
-        global data
+        data = []
 
         clause = request.data['selected_clause']
         column = request.data['selected_column']
@@ -94,10 +93,6 @@ class FilteredItems(APIView):
         elif clause == 'contains':
             data = self.contains(column, value)
 
-        return Response()
-
-    def get(self, request):
-        global data
         serializer = ItemSerializer(data, many=True)
 
         return Response(serializer.data)
