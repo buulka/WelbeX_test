@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import ItemSerializer
 
-data = []
+# data = []
 
 class ItemList(APIView):
 
@@ -104,27 +104,15 @@ class FilteredItems(APIView):
 
 
 class SortedItems(APIView):
+
     def sort(self, column):
-        items = []
         try:
-            if column == 'name':
-                items = Item.objects.raw('SELECT * FROM welbex ORDER BY name')
-            elif column == 'count':
-                items = Item.objects.raw('SELECT * FROM welbex ORDER BY count')
-            elif column == 'distance':
-                items = Item.objects.raw('SELECT * FROM welbex ORDER BY distance')
-            return items
+            return Item.objects.order_by(column)
         except Item.DoesNotExist:
             raise Http404
 
     def post(self, request):
-        global data
-
         column = request.data['selected_column']
-        data = self.sort(column)
-        return Response()
+        serializer = ItemSerializer(self.sort(column), many=True)
 
-    def get(self, request):
-        global data
-        serializer = ItemSerializer(data, many=True)
         return Response(serializer.data)

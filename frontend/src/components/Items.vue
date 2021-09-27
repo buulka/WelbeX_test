@@ -2,7 +2,7 @@
 <div class="container-fluid">
 	<div class="row">
 				<div class="col-md-4">
-          <b-form @submit.prevent="sendSortData" inline>
+          <b-form @submit.prevent="updateSortedItems" inline>
           <label class="mr-sm-2" >Сортировать по</label>
 
           <b-form-select v-model="sortform.selected_column" required
@@ -18,7 +18,7 @@
           ></b-form-select>
 
             <div v-if="sortform.selected_column != null">
-              <b-button  @click="sendSortData" type="submit">Отсортировать</b-button>
+              <b-button  @click="updateSortedItems" type="submit">Отсортировать</b-button>
             </div>
 
             <div v-else>
@@ -162,7 +162,6 @@ export default {
       page: 1,
       perPage: 5,
       pages: [],
-      status: null
     };
   },
 computed: {
@@ -219,8 +218,9 @@ computed: {
   updateSortedItems() {
 
     const path = 'http://localhost:8000/sort/';
+    const article = {selected_column: this.sortform.selected_column};
     axios
-        .get(path)
+        .post(path, article)
         .then(res => (this.items = res.data))
         .catch((error) => {
           console.error(error);
@@ -244,17 +244,8 @@ computed: {
 
     axios.post(path, article);
     this.updateFilteredItems();
-    this.status = 'filter';
 
   },
-
-  sendSortData() {
-    const path = 'http://localhost:8000/sort/';
-    const article = {selected_column: this.sortform.selected_column};
-    axios.post(path, article);
-    this.updateSortedItems();
-  },
-
 
 
 },
