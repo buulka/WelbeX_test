@@ -15,7 +15,6 @@ graphql-relay==2.0.1
 gunicorn==20.1.0
 npx==0.0.19
 numpy==1.21.2
-pipenv==2021.5.29
 pipfile==0.0.2
 platformdirs==2.4.0
 promise==2.3
