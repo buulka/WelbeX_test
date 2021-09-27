@@ -22,48 +22,27 @@ class ItemList(APIView):
 class FilteredItems(APIView):
 
     def equals(self, column, value):
-        items = []
+        kwargs = {column: value}
         try:
-            if column == 'date':
-                items = Item.objects.filter(date=value)
-            elif column == 'name':
-                items = Item.objects.filter(name=value)
-            elif column == 'count':
-                items = Item.objects.filter(count=int(value))
-            elif column == 'distance':
-                items = Item.objects.filter(distance=int(value))
-
+            items = Item.objects.filter(**kwargs)
             return items
         except Item.DoesNotExist:
             raise Http404
 
     def more(self, column, value):
-        items = []
+        column += '__gt'
+        kwargs = {column: value}
         try:
-            if column == 'date':
-                items = Item.objects.filter(date__gt=value)
-            elif column == 'name':
-                items = Item.objects.filter(name__gt=value)
-            elif column == 'count':
-                items = Item.objects.filter(count__gt=value)
-            elif column == 'distance':
-                items = Item.objects.filter(distance__gt=value)
-
+            items = Item.objects.filter(**kwargs)
             return items
         except Item.DoesNotExist:
             raise Http404
 
     def less(self, column, value):
-        items = []
+        column += '__lt'
+        kwargs = {column: value}
         try:
-            if column == 'date':
-                items = Item.objects.filter(date__lt=value)
-            elif column == 'name':
-                items = Item.objects.filter(name__lt=value)
-            elif column == 'count':
-                items = Item.objects.filter(count__lt=value)
-            elif column == 'distance':
-                items = Item.objects.filter(distance__lt=value)
+            items = Item.objects.filter(**kwargs)
 
             return items
         except Item.DoesNotExist:
@@ -72,7 +51,6 @@ class FilteredItems(APIView):
     def contains(self, column, value):
         try:
             items = Item.objects.filter(name__icontains=value)
-            print(items)
             return items
         except Item.DoesNotExist:
             raise Http404
