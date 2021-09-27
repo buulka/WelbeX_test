@@ -1,1 +1,1 @@
-web: gunicorn application.wsgi --log-file -
+web: gunicorn WelbeX_test.wsgi --log-file -
