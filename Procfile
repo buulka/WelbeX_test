@@ -1,3 +1,2 @@
-web: gunicorn WelbeX_test.wsgi:application --log-file - --log-level debug
-python manage.py collectstatic --noinput
-manage.py migrate
+web: gunicorn myapphere.wsgi
+web: python manage.py runserver
