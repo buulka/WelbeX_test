@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'application.apps.ApplicationConfig',
     'webpack_loader',
+    'django_heroku',
     # 'graphene_django',
     'corsheaders',
 ]
@@ -57,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = ['http://localhost:8080', 'http://localhost:8081']
+CORS_ORIGIN_WHITELIST = ['http://localhost:8080']
 CORS_ORIGIN_ALLOW_ALL = False
 
 ROOT_URLCONF = 'WelbeX_test.urls'
